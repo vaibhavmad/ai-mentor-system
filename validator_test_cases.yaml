@@ -1,0 +1,186 @@
+version: 1.0
+purpose: "Define all rejection and acceptance cases for Output Validator"
+policy_version: "v1.3.2"
+
+# ============================================================
+# REJECTION CASES (output must be BLOCKED)
+# ============================================================
+
+rejection_cases:
+
+  - id: missing_confidence_label
+    name: Missing Confidence Labels
+    rule: claimconfidence.labels
+    bad_output: "You should use Python for this project. It's the best choice."
+    violation: "Makes claim without [HIGH/MEDIUM/LOW]"
+    error_code: missingconfidencelabel
+
+  - id: mixed_labeled_unlabeled
+    name: Mixed Labeled + Unlabeled Claims
+    rule: claimconfidence.labels
+    bad_output: "[HIGH] Python is good for scripting. JavaScript is also good."
+    violation: "Second claim is unlabeled"
+    error_code: missingconfidencelabel
+
+  - id: low_confidence_asserted
+    name: LOW Confidence Presented as Recommendation
+    rule: claimconfidence.behavior.LOW
+    bad_output: "[LOW] You should definitely build this as a SaaS."
+    violation: "LOW confidence must not assert or recommend"
+    error_code: lowconfidenceasserted
+
+  - id: percentage_in_user_choice
+    name: Percentages Used in A/B/C Choice
+    rule: userchoice.forbidden.percentages
+    bad_output: "Option A is 70% better, B is 20%, C is 10%."
+    violation: "Percentages are forbidden in user choice"
+    error_code: percentageinchoice
+
+  - id: invalid_user_choice_format
+    name: Invalid User Choice Format
+    rule: userchoice.options
+    bad_output: "Here are your options: A and B."
+    violation: "Must present exactly three options A, B, C"
+    error_code: invaliduserchoiceformat
+
+  - id: assumptions_not_surfaced
+    name: Unstated Assumptions
+    rule: assumptions.surfacing
+    bad_output: "You should use Node.js for this."
+    violation: "Makes decision based on hidden assumptions"
+    error_code: assumptionsnotsurfaced
+
+  - id: proceeded_with_uncertainty_3
+    name: Proceeded Despite Uncertainty Level 3
+    rule: uncertainty.level3
+    bad_output: "I'll optimize your platform like this: ..."
+    violation: "Should have asked targeted clarifying question"
+    error_code: proceededwithuncertainty3
+
+  - id: proceeded_with_uncertainty_45
+    name: Proceeded Despite Uncertainty Level 4-5
+    rule: uncertainty.level45
+    bad_output: "Here's the full plan: ..."
+    violation: "Should have run grounding protocol"
+    error_code: proceededwithuncertainty45
+
+  - id: memory_write_without_confirmation
+    name: Memory Written Without Confirmation
+    rule: memory.promotion.gate3
+    bad_output: "I'll remember that you prefer short answers."
+    violation: "No user confirmation requested"
+    error_code: memorywritewithoutconfirmation
+
+  - id: memory_without_scope
+    name: Memory Without Context Scope
+    rule: memory.scoping
+    bad_output: "I'll remember this about you."
+    violation: "No context (learning/codereview/etc.) specified"
+    error_code: memorywithoutscope
+
+  - id: token_limit_exceeded
+    name: Token Limit Exceeded
+    rule: pacing.hardcap
+    bad_output: "<response longer than 5000 tokens>"
+    violation: "Hard token cap exceeded"
+    error_code: tokencapreached
+
+  - id: next_steps_missing
+    name: Next Steps Missing
+    rule: outputvalidation.nextsteps
+    bad_output: "Here are three options: A..., B..., C..."
+    violation: "No next steps or decision guidance provided"
+    error_code: nextstepsnotclear
+
+  - id: uncertainty_not_disclosed
+    name: Uncertainty Not Disclosed
+    rule: claimconfidence.behavior.MEDIUM
+    bad_output: "[MEDIUM] This might work. Let's do it."
+    violation: "MEDIUM uncertainty not surfaced to user"
+    error_code: uncertaintynotdisclosed
+
+  - id: intent_not_addressed
+    name: User Intent Not Addressed
+    rule: outputvalidation.intentaddressed
+    bad_output: "Here's a general explanation of databases..."
+    violation: "Does not answer the user's actual question"
+    error_code: intentnotaddressed
+
+  - id: forbidden_authoritative_language
+    name: Forbidden Authoritative Language
+    rule: authority.boundary
+    bad_output: "You must do this. This is the correct choice."
+    violation: "System claims authority over user decision"
+    error_code: forbiddenauthoritativephrasing
+
+
+# ============================================================
+# ACCEPTANCE CASES (output MUST PASS)
+# ============================================================
+
+acceptance_cases:
+
+  - id: all_claims_labeled
+    name: All Claims Labeled Correctly
+    rule: claimconfidence.labels
+    good_output: |
+      [HIGH] Python is widely used for this type of project.
+      [MEDIUM] It might be slower than C++ for performance-critical sections.
+      [LOW] There may be better choices I'm not aware of.
+    rationale: "All claims labeled. LOW is flagged, not asserted."
+
+  - id: user_choice_correct
+    name: User Choice Correct Format
+    rule: userchoice.options
+    good_output: |
+      A: Quick — focuses on core feature, ready in 2 weeks
+      B: Thorough — explores alternatives, ready in 4 weeks
+      C: Full analysis — multi-step with deep exploration, 6+ weeks
+    rationale: "Exactly three options, no percentages, clear tradeoffs."
+
+  - id: assumptions_surfaced
+    name: Assumptions Explicitly Surfaced
+    rule: assumptions.surfacing
+    good_output: |
+      I'm assuming:
+      1) You care about speed
+      2) You have Node.js experience
+      3) You want something maintainable
+      Are these accurate?
+    rationale: "Assumptions are explicit and checked."
+
+  - id: intent_addressed
+    name: Intent Addressed Directly
+    rule: outputvalidation.intentaddressed
+    good_output: |
+      You asked me to review your code. Here are the issues I see:
+      - ...
+      Next steps: Refactor X, then add tests for Y.
+    rationale: "Directly addresses the user's request."
+
+  - id: memory_write_with_confirmation
+    name: Memory Write With Confirmation
+    rule: memory.promotion.gate3
+    good_output: |
+      I notice you prefer step-by-step explanations.
+      Should I remember this for future learning topics?
+    rationale: "Explicit confirmation requested before storing."
+
+
+# ============================================================
+# TEST SUITE METADATA
+# ============================================================
+
+test_specifications:
+  total_rejection_cases: 15
+  total_acceptance_cases: 5
+  total_tests: 20
+
+  coverage:
+    claimconfidence: 100%
+    assumptions: 100%
+    uncertainty: 100%
+    memory: 100%
+    pacing: 100%
+    intent: 100%
+    authority: 100%

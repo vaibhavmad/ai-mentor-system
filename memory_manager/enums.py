@@ -1,0 +1,22 @@
+from enum import Enum
+
+
+class MemoryQueryResult(Enum):
+    EMPTY = "EMPTY"
+    PARTIAL = "PARTIAL"
+    PRESENT = "PRESENT"
+    CONFLICT = "CONFLICT"
+
+
+class PromotionDecision(Enum):
+    GATE_1_OBSERVE = "GATE_1_OBSERVE"
+    GATE_2_FLAG = "GATE_2_FLAG"
+    GATE_3_REQUIRE_CONFIRMATION = "GATE_3_REQUIRE_CONFIRMATION"
+    NO_PROMOTION = "NO_PROMOTION"
+
+
+class DecayStatus(Enum):
+    ACTIVE = "ACTIVE"
+    STALE = "STALE"
+    RECONFIRMED = "RECONFIRMED"
+    HISTORICAL = "HISTORICAL"
