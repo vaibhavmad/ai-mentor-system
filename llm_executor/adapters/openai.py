@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from openai import OpenAI
 
@@ -20,10 +21,10 @@ class OpenAIAdapter(BaseLLMAdapter):
 
     def __init__(
         self,
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
         model: str = "gpt-5.2",
         timeout_seconds: int = 30,
-        temperature: float | None = None,  # Ignored intentionally
+        temperature: Optional[float] = None,  # Ignored intentionally
     ):
         if api_key is None:
             api_key = os.environ.get("OPENAI_API_KEY")

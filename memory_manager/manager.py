@@ -310,3 +310,58 @@ def get_active_memory(context: str) -> List[MemoryEntry]:
     validate_context(context)
     _, entries = query_memory(context)
     return [e for e in entries if e.status == DecayStatus.ACTIVE]
+
+
+# ------------------------------------------------------------------
+# PUBLIC FACADE — CLASS-BASED API (FOR SYSTEM WIRING & TEST HARNESS)
+# ------------------------------------------------------------------
+
+class MemoryManager:
+    """
+    Thin facade over the Memory Manager module-level API.
+
+    PURPOSE:
+    - Provide a class-based public interface
+    - Preserve existing functional implementation
+    - Enable deterministic system wiring and testing
+
+    HARD RULES:
+    - No internal state
+    - No logic added
+    - No behavior changes
+    - Delegates ONLY to canonical functions
+    """
+
+    def query_memory(
+        self,
+        context: str,
+        content_key: Optional[str] = None,
+    ) -> Tuple[MemoryQueryResult, List[MemoryEntry]]:
+        return query_memory(context, content_key)
+
+    def propose_memory(self, entry: MemoryEntry) -> ProposalResult:
+        return propose_memory(entry)
+
+    def confirm_memory(self, entry_id: str, user_response: str) -> MemoryEntry:
+        return confirm_memory(entry_id, user_response)
+
+    def resolve_conflict(
+        self,
+        entry_a: MemoryEntry,
+        entry_b: MemoryEntry,
+        choice: str,
+    ) -> List[MemoryEntry]:
+        return resolve_conflict_api(entry_a, entry_b, choice)
+
+    def check_and_apply_decay(self, entry: MemoryEntry) -> MemoryEntry:
+        return check_and_apply_decay(entry)
+
+    def apply_reconfirmation(
+        self,
+        entry: MemoryEntry,
+        user_response: str,
+    ) -> MemoryEntry:
+        return apply_reconfirmation(entry, user_response)
+
+    def get_active_memory(self, context: str) -> List[MemoryEntry]:
+        return get_active_memory(context)

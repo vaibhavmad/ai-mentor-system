@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 from llm_executor.models import LLMResponse
 
@@ -13,9 +15,9 @@ class FakeLLM:
     - No inspection shortcuts
     """
 
-    def __init__(self, scripted_responses):
+    def __init__(self, scripted_responses: List[LLMResponse]):
         """
-        scripted_responses: list[LLMResponse]
+        scripted_responses: List[LLMResponse]
         """
         self._responses = list(scripted_responses)
         self._calls = []

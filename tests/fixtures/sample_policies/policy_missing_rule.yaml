@@ -1,0 +1,128 @@
+version: 1.3.2
+status: execution-sealed
+contract: binding
+driftforbidden: true
+
+# =========================
+# NON-NEGOTIABLE RULES
+# =========================
+non_negotiable_rules:
+  - "All output must be validated by Output Validator before reaching user"
+  - "No memory write without explicit user confirmation"
+  - "No claim without confidence label [HIGH/MEDIUM/LOW]"
+  - "No global memory (all entries scoped by context)"
+  - "No assumptions without surfacing"
+  # Missing required rule - should cause validation error
+
+# =========================
+# CLAIM CONFIDENCE SYSTEM
+# =========================
+claim_confidence:
+  labels:
+    HIGH: "Verified via reliable memory or external source"
+    MEDIUM: "Reasonable inference or possibly stale memory"
+    LOW: "Uncertain or speculative"
+  behavior:
+    HIGH: "Proceed normally"
+    MEDIUM: "Proceed but explicitly flag uncertainty"
+    LOW: "Do not assert; ask user or recommend verification"
+  forbidden:
+    - "Presenting LOW as HIGH"
+
+# =========================
+# MEMORY SYSTEM
+# =========================
+memory:
+  states:
+    - EMPTY
+    - PARTIAL
+    - PRESENT
+    - CONFLICT
+  contexts_allowed:
+    - learning
+  globalcontextforbidden: true
+  requiredparametersbycontext:
+    learning:
+      - topic
+  promotion:
+    gate1: "first signal → observational only"
+  decay:
+    days: 180
+    action: require_reconfirmation_before_use
+  conflict_resolution:
+    trigger: "memorystate CONFLICT"
+    behavior:
+      - "Do not merge"
+
+# =========================
+# UNCERTAINTY SYSTEM
+# =========================
+uncertainty:
+  binarychecks:
+    - intentclarity
+  mapping:
+    allyes: LEVEL12
+
+# =========================
+# GROUNDING PROTOCOL
+# =========================
+groundingprotocol:
+  trigger: "uncertainty LEVEL45"
+  numquestions: 5
+  questions:
+    learning:
+      - "Question 1"
+      - "Question 2"
+      - "Question 3"
+      - "Question 4"
+      - "Question 5"
+
+# =========================
+# PACING MODES
+# =========================
+pacing:
+  modes:
+    normal:
+      targettokens: 1000
+      hardcap: 1200
+      multiturn: false
+
+# =========================
+# LLM EXECUTOR
+# =========================
+llmexecutor:
+  receives:
+    - narrowinstruction
+  doesnotdecide:
+    - routing
+
+# =========================
+# OUTPUT VALIDATION
+# =========================
+outputvalidation:
+  mustcheck:
+    - missing_confidence_label
+
+# =========================
+# ERROR MESSAGES (LOCKED)
+# =========================
+error_messages:
+  missing_confidence_label: "I must label my claim as [HIGH], [MEDIUM], or [LOW]. Which is correct?"
+
+# =========================
+# BOOT VALIDATION
+# =========================
+bootvalidation:
+  required_sections:
+    - version
+    - status
+    - contract
+    - non_negotiable_rules
+    - claim_confidence
+    - memory
+    - uncertainty
+    - groundingprotocol
+    - pacing
+    - llmexecutor
+    - outputvalidation
+    - error_messages

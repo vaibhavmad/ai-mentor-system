@@ -60,3 +60,34 @@ class UserChoicePrompt:
     """
     type: Literal["USER_CHOICE"]
     options: Dict[str, str]  # {"A": "...", "B": "...", "C": "..."}
+
+
+    # ------------------------------------------------------------------
+# ORCHESTRATOR CONTEXT (SHARED CONTRACT)
+# ------------------------------------------------------------------
+
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class OrchestratorContext:
+    """
+    Immutable context object passed to OutputValidator.
+
+    HARD RULES:
+    - No logic
+    - No validation
+    - No side effects
+    - Pure data contract only
+    """
+
+    uncertainty_level: Any
+    memory_write_attempted: bool
+    memory_confirmation_asked: bool
+    memory_scope: Any
+    token_count: int
+    token_limit: int
+    user_intent: Any
+    assumptions_required: bool
+    contains_medium_or_low_confidence_claims: bool

@@ -117,8 +117,8 @@ def test_repeated_calls_are_idempotent():
     """
     engine = PolicyEngine("policy_v1.3.2.yaml")
 
-    msg1 = engine.get_error_message(ErrorCode.tokencapreached)
-    msg2 = engine.get_error_message(ErrorCode.tokencapreached)
+    msg1 = engine.get_error_message(ErrorCode.token_cap_reached)
+    msg2 = engine.get_error_message(ErrorCode.token_cap_reached)
 
     assert msg1 == msg2
 

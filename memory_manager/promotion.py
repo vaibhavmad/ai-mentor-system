@@ -1,9 +1,11 @@
+from typing import List
+
 from memory_manager.enums import PromotionDecision
 from memory_manager.models import MemoryEntry, ProposalResult
 
 
 def evaluate_promotion(
-    existing_entries: list[MemoryEntry],
+    existing_entries: List[MemoryEntry],
     proposed_entry: MemoryEntry,
 ) -> ProposalResult:
     """

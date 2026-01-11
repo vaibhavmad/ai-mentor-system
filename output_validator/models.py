@@ -4,20 +4,21 @@ from typing import Optional, Literal
 
 
 class ErrorCode(Enum):
-    missingconfidencelabel = "missingconfidencelabel"
-    lowconfidenceasserted = "lowconfidenceasserted"
-    percentageinchoice = "percentageinchoice"
-    invaliduserchoiceformat = "invaliduserchoiceformat"
-    assumptionsnotsurfaced = "assumptionsnotsurfaced"
-    proceededwithuncertainty3 = "proceededwithuncertainty3"
-    proceededwithuncertainty45 = "proceededwithuncertainty45"
-    memorywritewithoutconfirmation = "memorywritewithoutconfirmation"
-    memorywithoutscope = "memorywithoutscope"
-    tokencapreached = "tokencapreached"
-    nextstepsnotclear = "nextstepsnotclear"
-    uncertaintynotdisclosed = "uncertaintynotdisclosed"
-    intentnotaddressed = "intentnotaddressed"
-    forbiddenauthoritativephrasing = "forbiddenauthoritativephrasing"
+    missing_confidence_label = "missing_confidence_label"
+    low_confidence_asserted = "low_confidence_asserted"
+    percentage_in_choice = "percentage_in_choice"
+    invalid_user_choice_format = "invalid_user_choice_format"
+    assumptions_not_surfaced = "assumptions_not_surfaced"
+    proceeded_with_uncertainty3 = "proceeded_with_uncertainty3"
+    proceeded_with_uncertainty45 = "proceeded_with_uncertainty45"
+    memory_write_without_confirmation = "memory_write_without_confirmation"
+    memory_without_scope = "memory_without_scope"
+    token_cap_reached = "token_cap_reached"
+    next_steps_not_clear = "next_steps_not_clear"
+    uncertainty_not_disclosed = "uncertainty_not_disclosed"
+    intent_not_addressed = "intent_not_addressed"
+    forbidden_authoritative_phrasing = "forbidden_authoritative_phrasing"
+    contradicts_memory = "contradicts_memory"
 
 
 @dataclass(frozen=True)

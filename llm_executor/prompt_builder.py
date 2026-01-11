@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from llm_executor.models import LLMRequest
 from pacing_controller.enums import PacingMode
 from llm_executor.errors import LLMExecutionError
@@ -19,7 +21,7 @@ You MUST NOT:
 """.strip()
 
 
-def _build_mode_block(mode: PacingMode, turn_index: int | None) -> str:
+def _build_mode_block(mode: PacingMode, turn_index: Optional[int]) -> str:
     if mode == PacingMode.NORMAL:
         return """
 NORMAL MODE
@@ -53,7 +55,7 @@ Do not exceed the limit.
     raise LLMExecutionError(f"Unknown pacing mode: {mode}")
 
 
-def _build_forbidden_block(forbidden_patterns: list[str]) -> str:
+def _build_forbidden_block(forbidden_patterns: List[str]) -> str:
     lines = ["You must NOT:"]
     for pattern in forbidden_patterns:
         lines.append(f"- {pattern}")

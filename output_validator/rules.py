@@ -1,5 +1,5 @@
 import re
-from typing import Tuple
+from typing import Optional, Tuple
 
 CONFIDENCE_LABELS = ["[HIGH]", "[MEDIUM]", "[LOW]"]
 
@@ -67,7 +67,7 @@ def low_confidence_asserted(text: str) -> bool:
 # Choice formatting rules
 # ------------------------------------------------------------------
 
-def violates_abc_rules(text: str) -> Tuple[bool, str | None]:
+def violates_abc_rules(text: str) -> Tuple[bool, Optional[str]]:
     if PERCENT_PATTERN.search(text):
         return True, "percentageinchoice"
 

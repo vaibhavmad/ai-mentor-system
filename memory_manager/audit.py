@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from typing import Optional
 from uuid import uuid4
 
 from memory_manager.storage import get_connection
@@ -11,8 +12,8 @@ from memory_manager.storage import get_connection
 
 def _write_audit_event(
     event_type: str,
-    memory_id: str | None = None,
-    details: str | None = None,
+    memory_id: Optional[str] = None,
+    details: Optional[str] = None,
 ) -> None:
     conn = get_connection()
     cursor = conn.cursor()

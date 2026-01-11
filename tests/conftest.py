@@ -17,6 +17,11 @@ from orchestrator.orchestrator import ConversationOrchestrator
 DEFAULT_DATE = datetime(2024, 1, 1)
 
 
+def pytest_configure(config):
+    """Register custom pytest marks."""
+    config.addinivalue_line("markers", "policy_violation: marks tests that check for policy violations")
+
+
 @pytest.fixture
 def build_system():
     """

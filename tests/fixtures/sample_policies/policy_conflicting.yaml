@@ -41,40 +41,13 @@ memory:
     - PARTIAL
     - PRESENT
     - CONFLICT
-
   contexts_allowed:
     - learning
-    - codereview
-    - architecturedesign
-    - problemsolving
-    - decisionmaking
-    - planning
-    - evaluation
-
-  globalcontextforbidden: true
-
+  globalcontextforbidden: false  # CONFLICT: Should be true per non-negotiable rules
   requiredparametersbycontext:
     learning:
       - topic
       - depthorgoal
-    codereview:
-      - code
-      - reviewgoal
-    architecturedesign:
-      - system
-      - goal
-    problemsolving:
-      - problem
-    decisionmaking:
-      - criteria
-      - constraints
-    planning:
-      - goal
-      - timehorizon
-    evaluation:
-      - subject
-      - standard
-
   promotion:
     gate1: "first signal → observational only"
     gate2: "repetition across different context categories → flag candidate"
@@ -82,34 +55,18 @@ memory:
     forbidden:
       - "Promotion by repetition alone"
       - "Storing inferred or guessed preferences"
-
   decay:
     days: 180
     action: require_reconfirmation_before_use
-
-    reconfirmation_message: |
-      "I have this from over 6 months ago: [old_entry].
-       Is this still accurate?"
-
+    reconfirmation_message: "I have this from over 6 months ago: [old_entry]. Is this still accurate?"
     outcomes:
       - "User confirms: update last_used_at, keep active"
-      - "User corrects: mark old as historical, store new as HIGH"
-      - "User says no longer relevant: mark old as historical"
-      - "User is unsure: mark as CONFLICT and ask later"
-
   conflict_resolution:
     trigger: "memorystate CONFLICT"
     detection: "Two or more memory entries in same context contradict"
     behavior:
       - "Do not merge"
       - "Do not guess"
-      - "Do not average"
-      - "Ask user explicitly"
-    outcomes:
-      - "User confirms A: mark B historical, keep A"
-      - "User confirms B: mark A historical, store B as HIGH"
-      - "Both true in different scopes: split into separate scoped entries"
-      - "Unclear: keep conflict, ask again later"
     storagerule: "No memory write until conflict is resolved"
 
 # =========================
@@ -120,49 +77,10 @@ uncertainty:
     - intentclarity
     - contextcompleteness
     - memoryconsistency
-
   mapping:
     allyes: LEVEL12
     oneno: LEVEL3
     twoormoreno: LEVEL45
-
-# =========================
-# ASSUMPTION HANDLING
-# =========================
-assumptions:
-  forbiddenphrases:
-    - "Can I assume X?"
-  requiredstyle:
-    - "Which of these materially affects the outcome?"
-
-  underspecifiedfallback:
-    message: "I don't have enough information to proceed accurately."
-    followup: "Which of these would help most?"
-    options:
-      - "Clarify your primary goal"
-      - "State your key constraint or timeline"
-      - "Describe what success looks like"
-    behavior: "Stop and wait for clarification. Do not guess."
-
-# =========================
-# INTAKE PROTOCOL
-# =========================
-intake:
-  trigger: "memorystate EMPTY"
-  questions:
-    - text: "What area would you like help with?"
-      required: true
-    - text: "What is your experience level in this area?"
-      required: true
-    - text: "What are your primary goals?"
-      required: false
-    - text: "What are your key constraints or concerns?"
-      required: false
-    - text: "Is there anything else I should know?"
-      required: false
-  after: "Proceed, or add more?"
-  conflicthandling:
-    rule: "If answers contradict past memory, flag CONFLICT"
 
 # =========================
 # GROUNDING PROTOCOL
@@ -170,7 +88,6 @@ intake:
 groundingprotocol:
   trigger: "uncertainty LEVEL45"
   numquestions: 5
-
   questions:
     learning:
       - "What topic or concept are you trying to understand?"
@@ -178,81 +95,6 @@ groundingprotocol:
       - "What specifically confuses you about it?"
       - "Do you prefer examples, theory, or practice?"
       - "What will you use this knowledge for?"
-
-    codereview:
-      - "What is the primary goal of this code?"
-      - "What concerns do you have about it?"
-      - "What trade-offs matter most?"
-      - "What constraints apply (performance, readability, etc.)?"
-      - "Who will maintain this code?"
-
-    architecturedesign:
-      - "What system are you designing?"
-      - "What is the main goal?"
-      - "What constraints exist?"
-      - "What scale or load do you expect?"
-      - "What trade-offs are acceptable?"
-
-    problemsolving:
-      - "What exactly is the problem?"
-      - "What is failing or not working?"
-      - "What have you tried already?"
-      - "What constraints exist?"
-      - "What does a correct solution look like?"
-
-    decisionmaking:
-      - "What are the key decision criteria?"
-      - "What constraints are non-negotiable?"
-      - "What are the long-term consequences?"
-      - "What options are you considering?"
-      - "What happens if this goes wrong?"
-
-    planning:
-      - "What is the end goal?"
-      - "What is your timeline?"
-      - "What resources do you have?"
-      - "What could go wrong?"
-      - "How will you know it worked?"
-
-    evaluation:
-      - "What are we evaluating?"
-      - "By what standard?"
-      - "In what context?"
-      - "What alternatives exist?"
-      - "What decision will this inform?"
-
-  sixthquestionrule:
-    allowed_only_if: |
-      "Answers to the first 5 questions reveal a gap that would
-       fundamentally change the analysis or recommendation."
-
-    examples:
-      - "User reveals deadline in 2 weeks"
-      - "User reveals acquisition next month"
-      - "User reveals zero budget"
-
-    non_examples:
-      - "Just wants more detail"
-      - "Curiosity tangent"
-      - "Deeper explanation only"
-
-    decision_logic: |
-      "If missing information would materially change the strategy,
-       allow the 6th question. Otherwise synthesize from first 5."
-
-# =========================
-# EMOTIONAL HANDLING
-# =========================
-emotionalhandling:
-  emotionalstate_storage: forbidden
-  detection: "frustrated, overwhelmed, stuck, stressed"
-  behavior:
-    - "Acknowledge briefly"
-    - "Temporarily simplify or slow pacing"
-  pattern:
-    requires: "repetition + user confirmation"
-    storeas: "preference, not emotion"
-  example: "Prefers step-by-step for abstract topics"
 
 # =========================
 # PACING MODES
@@ -271,18 +113,6 @@ pacing:
       targettokens: 1200
       hardcap: 1200
       multiturn: true
-
-# =========================
-# USER CHOICE
-# =========================
-userchoice:
-  options:
-    A: "Quick — addresses core intent, may leave edge cases unexplored"
-    B: "Thorough — addresses core intent and explores key assumptions"
-    C: "Full analysis — multi-step, slow, most exhaustive"
-  forbidden:
-    - "percentages"
-    - "confidence numbers"
 
 # =========================
 # LLM EXECUTOR
@@ -358,16 +188,9 @@ bootvalidation:
     - llmexecutor
     - outputvalidation
     - error_messages
-
   checks_on_each:
     - "All required fields present"
     - "No contradictions with architecture"
-    - "All contexts have grounding questions"
-    - "All contexts have required parameters"
-    - "Pacing modes have hard caps"
-    - "Non-negotiable rules exist"
-
   on_failure: "System refuses to boot and reports configuration error"
-
   on_change:
     rule: "Version bump required + user approval"

@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Dict
+from typing import Dict, Optional
 
 from policy_engine.policy_engine import PolicyEngine
 from pacing_controller.enums import PacingMode
@@ -103,7 +103,7 @@ class PacingController:
 
         return deepcopy(self._limits_by_mode[mode])
     
-    def prepare_request(self, mode: PacingMode, user_choice: str | None = None) -> dict:
+    def prepare_request(self, mode: PacingMode, user_choice: Optional[str] = None) -> dict:
         """
         Prepare LLM request constraints for the given pacing mode.
 

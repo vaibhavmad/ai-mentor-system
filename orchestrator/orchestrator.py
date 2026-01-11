@@ -8,7 +8,7 @@ from memory_manager.enums import MemoryQueryResult
 from uncertainty_engine.enums import UncertaintyLevel
 from pacing_controller.enums import PacingMode
 
-from orchestrator.context import OrchestratorContext
+from orchestrator.models import OrchestratorContext
 
 
 class ConversationOrchestrator:
